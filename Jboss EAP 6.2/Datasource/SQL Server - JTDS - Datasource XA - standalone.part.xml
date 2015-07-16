@@ -1,0 +1,59 @@
+<!-- My DataSource configuration for SQL Server in Jboss using JDTS Driver -->
+<datasources>
+	<!-- https://access.redhat.com/documentation/en-US/JBoss_Enterprise_Application_Platform/6.2/html/Administration_and_Configuration_Guide/sect-Datasource_Configuration.html -->
+	<!-- https://access.redhat.com/documentation/en-US/JBoss_Enterprise_Application_Platform/6.2/html/Administration_and_Configuration_Guide/Example_Microsoft_SQLServer_XA_Datasource.html -->
+	<!-- http://jtds.sourceforge.net/faq.html -->
+
+	<xa-datasource jndi-name="java:/jdbc/MyAppName-ds" pool-name="MyAppName_POOL_DS" enabled="true" jta="true" use-java-context="true" use-ccm="true">
+		<!-- Server -->
+		<xa-datasource-property name="ServerName">localhost</xa-datasource-property> <!-- SQL Server IP -->
+		<xa-datasource-property name="Instance">EXPRESS</xa-datasource-property> <!-- SQL Server instance -->
+		
+		<!-- Database Identification -->
+		<xa-datasource-property name="DatabaseName">MyAppDB</xa-datasource-property> <!-- Database name -->
+		<xa-datasource-property name="appName">MyAppName - DEV - rafaelsc - jBoss - jTDS</xa-datasource-property> <!-- Connection Info Text -->
+		
+		<!-- TimeOuts -->
+		<xa-datasource-property name="loginTimeout">15</xa-datasource-property> <!-- Login Timeout - In seconds (15seg) -->
+		<timeout>
+			<query-timeout>330</query-timeout> <!-- em seconds (5min30seg) --> 
+			<idle-timeout-minutes>15</idle-timeout-minutes> <!-- (15min) -->
+			<xa-resource-timeout>600</xa-resource-timeout> <!-- em seconds (10min) --> 
+			
+			<allocation-retry>2</allocation-retry>
+			<allocation-retry-wait-millis>5000</allocation-retry-wait-millis> <!-- (5seg) -->
+		</timeout>
+		
+		<xa-pool>
+			<min-pool-size>5</min-pool-size>
+			<max-pool-size>100</max-pool-size>
+			<prefill>true</prefill>
+			<use-strict-min>true</use-strict-min>
+			
+			<is-same-rm-override>false</is-same-rm-override>
+		</xa-pool>
+		
+		<validation>
+			<background-validation>true</background-validation>
+			<valid-connection-checker class-name="org.jboss.jca.adapters.jdbc.extensions.mssql.MSSQLValidConnectionChecker" />
+			<!-- <background-validation-millis>30000</background-validation-millis> -->
+			<!-- <check-valid-connection-sql>SELECT 1</check-valid-connection-sql> -->
+			<!-- <exception-sorter class-name="org.jboss.jca.adapters.jdbc.extensions.mssql.MSSQLExceptionSorter" /> -->
+		</validation>
+		
+		<statement>
+			<prepared-statement-cache-size>100</prepared-statement-cache-size>
+			<share-prepared-statements>true</share-prepared-statements>
+		</statement>
+		
+		<transaction-isolation>TRANSACTION_READ_COMMITTED</transaction-isolation>
+		
+		<driver>sqlserver</driver>
+	</xa-datasource>
+	<drivers>
+		<driver name="sqlserver" module="net.sourceforge.jtds">
+			<driver-class>net.sourceforge.jtds.jdbc.Driver</driver-class>
+			<xa-datasource-class>net.sourceforge.jtds.jdbcx.JtdsDataSource</xa-datasource-class>
+		</driver>
+	</drivers>
+</datasources>
